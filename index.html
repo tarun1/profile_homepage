@@ -70,11 +70,32 @@
     @keyframes float2 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(-6%,10%) scale(1.05);} }
     @keyframes float3 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(4%,-8%) scale(1.08);} }
 
-    /* Marquee (two rows, opposite directions) */
-    @keyframes marqueeL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-    @keyframes marqueeR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-    .marquee-l { animation: marqueeL 42s linear infinite; }
-    .marquee-r { animation: marqueeR 56s linear infinite; }
+    /* Marquee (two rows, opposite directions).
+       translate3d + will-change pin the strip to its own GPU layer so the
+       browser can scroll it via the compositor instead of repainting the row
+       each frame. Durations are tightened (desktop) and tightened further on
+       small screens so the bands feel lively rather than glacial. */
+    @keyframes marqueeL { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+    @keyframes marqueeR { from { transform: translate3d(-50%,0,0); } to { transform: translate3d(0,0,0); } }
+    .marquee-l, .marquee-r {
+      will-change: transform;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    .marquee-l { animation: marqueeL 24s linear infinite; }
+    .marquee-r { animation: marqueeR 30s linear infinite; }
+    @media (max-width: 768px) {
+      .marquee-l { animation-duration: 16s; }
+      .marquee-r { animation-duration: 20s; }
+    }
+    @media (max-width: 420px) {
+      .marquee-l { animation-duration: 12s; }
+      .marquee-r { animation-duration: 16s; }
+    }
+    /* Hover to pause - desktop nicety */
+    @media (hover: hover) {
+      .marquee-l:hover, .marquee-r:hover { animation-play-state: paused; }
+    }
 
     /* Reveal-on-scroll (group + stagger via --i) */
     .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s ease; }
