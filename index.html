@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tarun Agrawal — Software Architect · GenAI &amp; Data</title>
+  <meta name="description" content="Software Architect with 11.5 years across data engineering, big-data cloud analytics, and quality engineering. Azure · Databricks · Snowflake · Apache Spark." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Instrument Serif"', 'Georgia', 'serif'],
+            mono:    ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            ink:    '#0a0a0a',
+            panel:  '#111113',
+            line:   '#1f1f23',
+            mute:   '#a1a1aa',
+            accent: '#38bdf8',
+            warm:   '#fbbf24',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #0a0a0a; color: #f4f4f5; font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+    /* Selection */
+    ::selection { background: #38bdf8; color: #0a0a0a; }
+
+    /* Scroll progress bar */
+    #progress { position: fixed; top: 0; left: 0; height: 2px; width: 0%; z-index: 60;
+      background: linear-gradient(90deg, #38bdf8 0%, #a78bfa 50%, #fbbf24 100%);
+      box-shadow: 0 0 14px rgba(56,189,248,.55); }
+
+    /* Cursor spotlight */
+    #spotlight { position: fixed; top: 0; left: 0; width: 720px; height: 720px; pointer-events: none;
+      transform: translate3d(-50%,-50%,0); border-radius: 50%; z-index: 1; opacity: .65;
+      background: radial-gradient(closest-side, rgba(56,189,248,0.12), rgba(167,139,250,0.05) 45%, transparent 70%);
+      mix-blend-mode: plus-lighter; transition: opacity .25s ease; }
+
+    /* Subtle grain */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 2; opacity: .04;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+    }
+
+    /* Aurora mesh blobs (hero only) */
+    .aurora { position: absolute; inset: -10%; pointer-events: none; filter: blur(90px); opacity: .55; z-index: 0; }
+    .aurora .blob { position: absolute; border-radius: 50%; mix-blend-mode: screen; will-change: transform; }
+    .aurora .blob.b1 { width: 42rem; height: 42rem; left: -10%; top: -20%; background: #0ea5e9;
+      animation: float1 22s ease-in-out infinite alternate; }
+    .aurora .blob.b2 { width: 38rem; height: 38rem; right: -12%; top: 5%; background: #6366f1;
+      animation: float2 26s ease-in-out infinite alternate; }
+    .aurora .blob.b3 { width: 30rem; height: 30rem; left: 30%; bottom: -10%; background: #f59e0b;
+      animation: float3 30s ease-in-out infinite alternate; opacity: .7; }
+    @keyframes float1 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(8%,6%) scale(1.1);} }
+    @keyframes float2 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(-6%,10%) scale(1.05);} }
+    @keyframes float3 { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(4%,-8%) scale(1.08);} }
+
+    /* Marquee (two rows, opposite directions) */
+    @keyframes marqueeL { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes marqueeR { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+    .marquee-l { animation: marqueeL 42s linear infinite; }
+    .marquee-r { animation: marqueeR 56s linear infinite; }
+
+    /* Reveal-on-scroll (group + stagger via --i) */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    .stagger > * { opacity: 0; transform: translateY(14px); transition: opacity .7s ease, transform .7s ease;
+      transition-delay: calc(var(--i, 0) * 80ms); }
+    .stagger.in > * { opacity: 1; transform: none; }
+
+    /* Big display text */
+    .display { font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; letter-spacing: -0.02em; line-height: 0.92; }
+    .display-italic { font-family: 'Instrument Serif', Georgia, serif; font-style: italic; font-weight: 400; }
+
+    /* Hero name letter stagger */
+    .name-char { display: inline-block; opacity: 0; transform: translateY(40%) rotate(-3deg);
+      animation: charIn .8s cubic-bezier(.22,1,.36,1) forwards; animation-delay: calc(var(--i,0) * 35ms + 200ms); }
+    @keyframes charIn { to { opacity: 1; transform: none; } }
+
+    /* Gradient name (parent rules — apply when text is NOT split into letters) */
+    .grad-name {
+      background: linear-gradient(180deg, #ffffff 0%, #d4d4d8 60%, #71717a 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .grad-italic {
+      background: linear-gradient(120deg, #38bdf8 0%, #a78bfa 50%, #fbbf24 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      background-size: 200% auto; animation: hueShift 12s ease-in-out infinite alternate;
+    }
+    @keyframes hueShift { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
+    /* When the hero name is split into per-letter inline-block spans, the parent's
+       background-clip: text no longer paints the children. Re-apply the gradient
+       directly to each letter, mapped to the viewport so the gradient stays
+       continuous across all letters. */
+    .grad-name .name-char,
+    .grad-italic .name-char {
+      background-attachment: fixed;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .grad-name .name-char {
+      background-image: linear-gradient(180deg, #ffffff 0%, #d4d4d8 60%, #71717a 100%);
+    }
+    .grad-italic .name-char {
+      background-image: linear-gradient(120deg, #38bdf8 0%, #a78bfa 50%, #fbbf24 100%);
+      background-size: 200% auto;
+    }
+
+    /* Eyebrow / kicker labels */
+    .kicker { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #a1a1aa; }
+
+    /* Underline-on-hover for nav */
+    .navlink { position: relative; }
+    .navlink::after {
+      content:""; position:absolute; left:0; right:0; bottom:-6px; height:1px;
+      background:#38bdf8; transform:scaleX(0); transform-origin:left;
+      transition: transform .35s ease;
+    }
+    .navlink:hover::after { transform: scaleX(1); }
+
+    /* Live pulse dot */
+    .pulse-dot { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #34d399; }
+    .pulse-dot::after { content:""; position: absolute; inset: -4px; border-radius: 50%;
+      background: rgba(52,211,153,.45); animation: pulse 1.8s ease-out infinite; }
+    @keyframes pulse { 0%{transform:scale(.6); opacity:.9;} 100%{transform:scale(2.2); opacity:0;} }
+
+    /* Tilt cards */
+    .tilt { transform-style: preserve-3d; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .tilt:hover { box-shadow: 0 30px 60px -30px rgba(56,189,248,.25); border-color: #3f3f46; }
+    .tilt .tilt-inner { transform: translateZ(20px); }
+
+    /* Capability tile */
+    .tile { position: relative; transition: background-color .25s ease, border-color .25s ease, transform .25s ease; isolation: isolate; }
+    .tile::before {
+      content:""; position:absolute; inset:0; border-radius: inherit; pointer-events:none; opacity:0;
+      background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(56,189,248,.12), transparent 40%);
+      transition: opacity .35s ease; z-index:0;
+    }
+    .tile:hover::before { opacity: 1; }
+    .tile > * { position: relative; z-index: 1; }
+    .tile:hover { background-color: #131316; border-color: #27272a; transform: translateY(-3px); }
+
+    /* Skill chips */
+    .chip { display:inline-flex; align-items:center; gap:6px; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid #27272a; background: #0f0f12; font-size: 11px; color: #d4d4d8; font-family: 'JetBrains Mono', ui-monospace, monospace;
+      letter-spacing: .04em; }
+    .chip.dot::before { content:""; width:6px; height:6px; border-radius:50%; background: currentColor; opacity:.7; }
+    .chip-accent { color: #38bdf8; border-color: rgba(56,189,248,.25); background: rgba(56,189,248,.06); }
+
+    /* Metric badge */
+    .metric { display:inline-flex; align-items:baseline; gap:4px; padding: 6px 10px; border-radius: 8px;
+      background: #0f0f12; border: 1px solid #27272a; font-size: 12px; color: #d4d4d8;
+      font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    .metric strong { color: #fafafa; font-weight: 600; font-size: 13px; }
+
+    /* Client name shimmer */
+    .client-name {
+      background: linear-gradient(90deg, #fafafa 0%, #71717a 50%, #fafafa 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      background-size: 200% auto; transition: background-position .8s ease, transform .35s ease;
+    }
+    .client-cell { position: relative; transition: background-color .35s ease; }
+    .client-cell::after { content:""; position:absolute; inset:0; pointer-events:none; opacity:0;
+      background: radial-gradient(closest-side, rgba(56,189,248,.18), transparent 70%); transition: opacity .4s ease; }
+    .client-cell:hover { background-color: #0f0f12; }
+    .client-cell:hover::after { opacity: 1; }
+    .client-cell:hover .client-name { background-position: -200% center; transform: translateY(-2px); }
+
+    /* Avatar */
+    .avatar { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+      font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: .08em;
+      color: #0a0a0a; font-weight: 600; box-shadow: 0 0 0 4px #0a0a0a, 0 0 24px rgba(56,189,248,.35); }
+
+    /* Motto word-by-word */
+    .motto-word { display: inline-block; opacity: 0; transform: translateY(28%); transition: opacity .8s ease, transform .8s ease;
+      transition-delay: calc(var(--i,0) * 140ms); }
+    .motto-word.in { opacity: 1; transform: none; }
+
+    /* Footer giant wordmark */
+    .wordmark {
+      font-family: 'Instrument Serif', Georgia, serif; font-style: italic; line-height: 0.85;
+      background: linear-gradient(180deg, rgba(244,244,245,.10) 0%, rgba(244,244,245,0) 95%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em; user-select: none; pointer-events: none; white-space: nowrap;
+    }
+
+    /* Section index dots (right rail) */
+    #rail { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 40;
+      display: flex; flex-direction: column; gap: 12px; }
+    #rail a { width: 8px; height: 8px; border-radius: 50%; border: 1px solid #3f3f46; transition: all .25s ease; }
+    #rail a:hover { border-color: #71717a; }
+    #rail a.active { background: #38bdf8; border-color: #38bdf8; box-shadow: 0 0 14px rgba(56,189,248,.6); }
+    @media (max-width: 768px) { #rail { display: none; } }
+
+    /* Hero portrait */
+    .portrait { position: relative; width: 200px; height: 200px; border-radius: 50%;
+      animation: floatY 7s ease-in-out infinite alternate; }
+    @media (min-width: 640px)  { .portrait { width: 240px; height: 240px; } }
+    @media (min-width: 1024px) { .portrait { width: 300px; height: 300px; } }
+    @media (min-width: 1280px) { .portrait { width: 340px; height: 340px; } }
+    .portrait::before {
+      content: ""; position: absolute; inset: -5px; border-radius: 50%; z-index: 0;
+      background: conic-gradient(from 220deg, #38bdf8, #a78bfa, #fbbf24, #f472b6, #38bdf8);
+      animation: spinSlow 90s linear infinite;
+    }
+    .portrait::after {
+      content: ""; position: absolute; inset: -16px; border-radius: 50%; z-index: -1;
+      background: radial-gradient(closest-side, rgba(56,189,248,.30), rgba(167,139,250,.12) 55%, transparent 75%);
+      filter: blur(18px);
+    }
+    .portrait img {
+      position: relative; z-index: 1; display: block; width: 100%; height: 100%;
+      border-radius: 50%; object-fit: cover; border: 4px solid #0a0a0a;
+      transition: transform .45s ease, filter .45s ease;
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .portrait:hover img { transform: scale(1.04); filter: saturate(1.15) contrast(1.05); }
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+    @keyframes floatY  { from { transform: translateY(-6px); } to { transform: translateY(6px); } }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+      .marquee-l, .marquee-r, .aurora .blob { animation: none !important; }
+      #spotlight { display: none; }
+    }
+  </style>
+</head>
+
+<body class="relative overflow-x-hidden">
+
+  <!-- Ambient layers -->
+  <div id="progress" aria-hidden="true"></div>
+  <div id="spotlight" aria-hidden="true"></div>
+
+  <!-- Section rail -->
+  <nav id="rail" aria-label="Section index">
+    <a href="#top"          data-target="top"         aria-label="Top"></a>
+    <a href="#about"        data-target="about"       aria-label="About"></a>
+    <a href="#skills"       data-target="skills"      aria-label="Skills"></a>
+    <a href="#experience"   data-target="experience"  aria-label="Experience"></a>
+    <a href="#clients"      data-target="clients"     aria-label="Clients"></a>
+    <a href="#certs"        data-target="certs"       aria-label="Certifications"></a>
+    <a href="#testimonials" data-target="testimonials" aria-label="Testimonials"></a>
+    <a href="#motto"        data-target="motto"       aria-label="Motto"></a>
+    <a href="#contact"      data-target="contact"     aria-label="Contact"></a>
+  </nav>
+
+  <!-- ============== TOP NAV ============== -->
+  <header class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-ink/70 border-b border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 h-14 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2 group">
+        <span class="w-7 h-7 grid place-items-center rounded-full border border-zinc-700 text-[11px] font-mono tracking-wider group-hover:border-accent group-hover:text-accent transition-colors">TA</span>
+        <span class="kicker hidden sm:inline">Tarun Agrawal</span>
+      </a>
+      <div class="hidden md:flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-400">
+        <span class="pulse-dot"></span>
+        <span>Open to architect / staff roles</span>
+      </div>
+      <nav class="flex items-center gap-7 text-sm">
+        <a href="#about"      class="navlink text-zinc-300 hover:text-white">About</a>
+        <a href="#experience" class="navlink text-zinc-300 hover:text-white">Experience</a>
+        <a href="#skills"     class="navlink text-zinc-300 hover:text-white hidden sm:inline">Skills</a>
+        <a href="#contact"    class="navlink text-zinc-300 hover:text-white">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============== MARQUEE ============== -->
+  <div id="top" class="pt-14 border-b border-line overflow-hidden bg-ink relative z-10">
+    <div class="flex whitespace-nowrap py-3 marquee-l text-zinc-300 text-sm font-mono uppercase tracking-[0.3em]">
+      <span class="px-8">Data Engineering</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Cloud Architecture</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">GenAI</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Snowflake</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Databricks</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Apache Spark</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Azure</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Tableau</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Data Engineering</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Cloud Architecture</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">GenAI</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Snowflake</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Databricks</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Apache Spark</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Azure</span><span class="px-8 text-accent">●</span>
+      <span class="px-8">Tableau</span><span class="px-8 text-accent">●</span>
+    </div>
+    <div class="flex whitespace-nowrap py-3 marquee-r text-zinc-500 text-xs font-mono uppercase tracking-[0.4em] border-t border-line/60">
+      <span class="px-8">11.5 yrs at Amdocs</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">600+ Tables</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">400+ Daily Extracts</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">14+ Engineers Mentored</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">50+ Downstream Channels</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">Billions of Rows</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">11.5 yrs at Amdocs</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">600+ Tables</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">400+ Daily Extracts</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">14+ Engineers Mentored</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">50+ Downstream Channels</span><span class="px-8 text-warm">◇</span>
+      <span class="px-8">Billions of Rows</span><span class="px-8 text-warm">◇</span>
+    </div>
+  </div>
+
+  <!-- ============== HERO ============== -->
+  <section class="relative overflow-hidden z-10 pt-20 sm:pt-28 pb-24 sm:pb-32">
+    <div class="aurora" aria-hidden="true">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 sm:px-10">
+      <div class="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+
+        <div class="lg:col-span-8 order-2 lg:order-1 reveal">
+          <div class="kicker mb-8 flex items-center gap-3">
+            <span class="pulse-dot"></span>
+            <span id="role-rotator" class="text-zinc-300">Software Architect</span>
+            <span class="text-zinc-600">·</span>
+            <span>GenAI &amp; Data &middot; Amdocs</span>
+          </div>
+
+          <h1 class="display text-[16vw] sm:text-[12vw] md:text-[10vw] lg:text-[8vw] xl:text-[7.25vw] leading-[0.9]">
+            <span class="grad-name" id="name-line-1">Tarun</span><br />
+            <span class="display-italic grad-italic" id="name-line-2">Agrawal.</span>
+          </h1>
+
+          <div class="mt-10 flex flex-wrap items-center gap-4">
+            <a href="#about"
+               class="group inline-flex items-center gap-2 rounded-full bg-zinc-100 text-ink px-5 py-2.5 text-sm font-medium hover:bg-white transition-colors">
+              Read profile
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform group-hover:translate-x-1"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </a>
+            <a href="#contact"
+               class="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-5 py-2.5 text-sm hover:border-accent hover:text-accent transition-colors">
+              Get in touch
+            </a>
+            <a href="mailto:tarun.agrawal@hotmail.com"
+               class="inline-flex items-center gap-2 rounded-full border border-transparent px-3 py-2.5 text-sm text-zinc-400 hover:text-white transition-colors">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="2.5" width="12" height="9" rx="1"/><path d="M1.5 3.5L7 7.5l5.5-4"/></svg>
+              tarun.agrawal@hotmail.com
+            </a>
+            <span class="ml-auto kicker hidden sm:inline">Pune, IN · 11.5 yrs</span>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 order-1 lg:order-2 reveal flex justify-center lg:justify-end">
+          <div class="portrait" aria-hidden="false">
+            <img src="tarun.jpg" alt="Portrait of Tarun Agrawal" loading="eager" decoding="async" />
+          </div>
+        </div>
+
+      </div>
+
+      <a href="#about" class="absolute bottom-0 right-6 sm:right-10 group hidden sm:flex items-center gap-2 text-zinc-500 hover:text-accent transition-colors">
+        <span class="kicker">Scroll</span>
+        <span class="block w-px h-12 bg-gradient-to-b from-zinc-600 to-transparent group-hover:from-accent transition-colors"></span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============== ABOUT ============== -->
+  <section id="about" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32 grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-3 reveal">
+        <div class="kicker mb-6">About me</div>
+        <div class="relative w-32 h-32 rounded-full grid place-items-center border border-line bg-panel overflow-hidden">
+          <span class="display text-6xl text-zinc-200">T<span class="display-italic text-accent">A</span></span>
+          <span class="absolute inset-0 rounded-full" style="box-shadow: 0 0 60px 10px rgba(56,189,248,.18) inset;"></span>
+        </div>
+        <div class="mt-6 space-y-1 text-sm text-zinc-400">
+          <div class="flex items-center gap-2"><span class="kicker text-zinc-500">Based</span> Pune, India</div>
+          <div class="flex items-center gap-2"><span class="kicker text-zinc-500">Stack</span> Azure · DBX · Snowflake</div>
+          <div class="flex items-center gap-2"><span class="kicker text-zinc-500">Edu</span> B.Tech ECE · LPU</div>
+        </div>
+      </div>
+      <div class="md:col-span-9 reveal">
+        <p class="display text-3xl sm:text-4xl md:text-5xl leading-[1.15] tracking-tight text-zinc-100">
+          Strategic, solutions-oriented <span class="display-italic grad-italic">Software Architect</span>
+          with <span class="display-italic">11.5 years</span> across high-scale data engineering,
+          big-data cloud analytics, and quality engineering frameworks.
+        </p>
+        <p class="mt-6 max-w-2xl text-zinc-400 leading-relaxed">
+          Designs and deploys enterprise-grade data landscapes on Azure, Databricks, Snowflake and Apache Spark
+          managing clusters that crunch billions of operational rows. Steers cross-functional modernizations from
+          legacy infrastructure to native cloud, mentors technical groups of 14+ engineers, and delivers
+          executive-level analytics for international telecom conglomerates.
+        </p>
+
+        <!-- Impact stats -->
+        <div id="stats" class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-px bg-line border border-line rounded-2xl overflow-hidden stagger">
+          <div class="bg-ink p-6 hover:bg-panel transition-colors" style="--i:0">
+            <div class="display text-5xl text-zinc-100"><span class="counter" data-to="11.5" data-suffix="">0</span></div>
+            <div class="kicker mt-2">Years experience</div>
+          </div>
+          <div class="bg-ink p-6 hover:bg-panel transition-colors" style="--i:1">
+            <div class="display text-5xl text-zinc-100"><span class="counter" data-to="600" data-suffix="+">0</span></div>
+            <div class="kicker mt-2">Tables owned</div>
+          </div>
+          <div class="bg-ink p-6 hover:bg-panel transition-colors" style="--i:2">
+            <div class="display text-5xl text-zinc-100"><span class="counter" data-to="400" data-suffix="+">0</span></div>
+            <div class="kicker mt-2">Daily extracts</div>
+          </div>
+          <div class="bg-ink p-6 hover:bg-panel transition-colors" style="--i:3">
+            <div class="display text-5xl text-zinc-100"><span class="counter" data-to="50" data-suffix="+">0</span></div>
+            <div class="kicker mt-2">Downstream feeds</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== WHAT I DO ============== -->
+  <section id="skills" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 mb-12">
+        <div class="md:col-span-3 reveal">
+          <div class="kicker">What I do</div>
+        </div>
+        <div class="md:col-span-9 reveal">
+          <h2 class="display text-4xl sm:text-5xl md:text-6xl">
+            Six things I do
+            <span class="display-italic text-mute">well.</span>
+          </h2>
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-line border border-line rounded-2xl overflow-hidden reveal">
+        <!-- 01 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">01</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <path d="M7 18a5 5 0 1 1 1.1-9.88A6 6 0 0 1 19 11a4 4 0 0 1-1 7.87"/>
+              <path d="M12 13v8M9 17l3-4 3 4"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">Cloud Architecture</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">Native Azure ecosystems &mdash; landing zones, integration patterns, secure data plane.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">Azure</span><span class="chip">Landing Zones</span><span class="chip">Networking</span>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">02</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">Data Warehousing</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">Databricks, Snowflake, Cloudera, Hadoop and Apache Hive at billion-row scale.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">Databricks</span><span class="chip">Snowflake</span><span class="chip">Hadoop</span><span class="chip">Hive</span>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">03</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/>
+              <path d="M8 6h8M6 8v8M18 8v8M8 18h8M8 8l2.5 2.5M16 8l-2.5 2.5M8 16l2.5-2.5M16 16l-2.5-2.5"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">Distributed Processing</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">Apache Spark and PySpark cluster sizing, pipeline tuning and cost-aware optimization.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">Spark</span><span class="chip">PySpark</span><span class="chip">Cluster Tuning</span>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">04</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <path d="M16 18l6-6-6-6M8 6l-6 6 6 6M14 4l-4 16"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">Languages &amp; Automation</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">Advanced SQL, Python and shell scripting for production-grade pipelines and tooling.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">SQL</span><span class="chip">Python</span><span class="chip">Shell</span><span class="chip chip-accent">GenAI</span>
+          </div>
+        </div>
+
+        <!-- 05 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">05</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 16l3-4 3 3 4-6"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">BI &amp; Analytics</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">Tableau dashboards engineered for C-suite stakeholders and regulatory reporting.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">Tableau</span><span class="chip">Exec Reporting</span><span class="chip">KPIs</span>
+          </div>
+        </div>
+
+        <!-- 06 -->
+        <div class="tile bg-ink p-8 min-h-56 flex flex-col">
+          <div class="flex items-center justify-between">
+            <div class="kicker text-accent">06</div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" class="opacity-90">
+              <path d="M2 9c5-6 15-6 20 0M5 13c4-4 10-4 14 0M8 17c2-2 6-2 8 0M11 21h2"/>
+            </svg>
+          </div>
+          <h3 class="mt-3 text-2xl font-semibold">Telecom Domain</h3>
+          <p class="mt-2 text-zinc-400 text-sm leading-relaxed">CRM, OMS and core telecom flows &mdash; international BSS &amp; subscriber lifecycle.</p>
+          <div class="mt-auto pt-4 flex flex-wrap gap-2">
+            <span class="chip">CRM</span><span class="chip">OMS</span><span class="chip">BSS</span><span class="chip">Subscriber</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== EXPERIENCE TIMELINE ============== -->
+  <section id="experience" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 mb-16">
+        <div class="md:col-span-3 reveal">
+          <div class="kicker">Experience</div>
+        </div>
+        <div class="md:col-span-9 reveal">
+          <h2 class="display text-4xl sm:text-5xl md:text-6xl">
+            Twelve years.
+            <span class="display-italic text-mute">One company.</span>
+          </h2>
+          <p class="mt-4 text-zinc-400 max-w-2xl">
+            Career spent at Amdocs, working with the world&rsquo;s most demanding telecom operators &mdash;
+            from QA engineer to data engineering team lead to architect.
+          </p>
+        </div>
+      </div>
+
+      <ol class="relative border-l border-line ml-2 sm:ml-0 reveal">
+        <!-- now -->
+        <li class="pl-8 sm:pl-12 pb-14 relative group">
+          <span class="absolute -left-[7px] top-2 w-3.5 h-3.5 rounded-full bg-accent shadow-[0_0_0_4px_#0a0a0a,0_0_22px_4px_rgba(56,189,248,.45)]"></span>
+          <div class="kicker text-accent mb-2 flex items-center gap-2"><span class="pulse-dot"></span> Now &middot; May 2026</div>
+          <h3 class="display text-3xl sm:text-4xl">Software Architect</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; GenAI &amp; Data</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Promoted to map technical governance, architectural roadmap, and platform standards across enterprise
+            data units. Oversees multi-phased engineering for reliable, decoupled, secure cloud-native environments.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="metric"><strong>Architecture</strong> &middot; governance</span>
+            <span class="metric"><strong>GenAI</strong> &middot; platform</span>
+          </div>
+        </li>
+
+        <!-- 3UK ALDM -->
+        <li class="pl-8 sm:pl-12 pb-14 relative">
+          <span class="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-zinc-200 shadow-[0_0_0_4px_#0a0a0a]"></span>
+          <div class="kicker mb-2">Jul 2024 &middot; Apr 2026</div>
+          <h3 class="display text-3xl sm:text-4xl">Team Lead &amp; Senior Data Engineer</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; 3UK ALDM</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Led a 7-engineer squad managing 600+ relational tables and 400+ daily vendor extracts to 50+
+            international downstream channels on Azure, Databricks and Snowflake. Owned 40+ Tableau executive
+            reports built on multi-billion-row telecom streams.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="metric"><strong>7</strong> engineers</span>
+            <span class="metric"><strong>600+</strong> tables</span>
+            <span class="metric"><strong>400+</strong> daily extracts</span>
+            <span class="metric"><strong>40+</strong> Tableau reports</span>
+            <span class="metric"><strong>50+</strong> downstream feeds</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">Azure</span><span class="chip">Databricks</span><span class="chip">Snowflake</span><span class="chip">Tableau</span>
+          </div>
+        </li>
+
+        <!-- 3ROI ADH -->
+        <li class="pl-8 sm:pl-12 pb-14 relative">
+          <span class="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-zinc-200 shadow-[0_0_0_4px_#0a0a0a]"></span>
+          <div class="kicker mb-2">Mar 2022 &middot; Jun 2024</div>
+          <h3 class="display text-3xl sm:text-4xl">Software Development Team Lead</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; 3ROI ADH (AD&amp;I)</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Pivoted from QE to Data Engineering via internal job posting; led 7 developers across multi-tenant big
+            data hosting for 3ROI&rsquo;s subscriber base &mdash; 300+ analytical schemas, hybrid on-prem Cloudera
+            Hadoop and Azure with heavy Spark/PySpark workloads.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="metric"><strong>7</strong> developers</span>
+            <span class="metric"><strong>300+</strong> schemas</span>
+            <span class="metric"><strong>Hybrid</strong> on-prem &amp; Azure</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">Cloudera</span><span class="chip">Hadoop</span><span class="chip">Spark</span><span class="chip">PySpark</span><span class="chip">Azure</span>
+          </div>
+        </li>
+
+        <!-- Singtel D3 -->
+        <li class="pl-8 sm:pl-12 pb-14 relative">
+          <span class="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-zinc-300 shadow-[0_0_0_4px_#0a0a0a]"></span>
+          <div class="kicker mb-2">Dec 2020 &middot; Feb 2022</div>
+          <h3 class="display text-3xl sm:text-4xl">Automation Software Engineer</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; Singtel</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Built modular automation and regression layers for CRM portals and customer-facing web flows, and
+            authored the in-house D3 utility (Design, Data, Deliver) for dynamic test modeling and synthetic
+            data generation.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="metric"><strong>D3</strong> utility (in-house)</span>
+            <span class="metric"><strong>CRM</strong> + Web</span>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">Selenium</span><span class="chip">Java</span><span class="chip">CI/CD</span>
+          </div>
+        </li>
+
+        <!-- Maxis OMS -->
+        <li class="pl-8 sm:pl-12 pb-14 relative">
+          <span class="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-zinc-400 shadow-[0_0_0_4px_#0a0a0a]"></span>
+          <div class="kicker mb-2">Mar 2020 &middot; Nov 2020</div>
+          <h3 class="display text-3xl sm:text-4xl">Functional QA Analyst</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; Maxis</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Functional validation of complex Order Management Systems, ensuring system uptime and clean database
+            persistence under heavy peak loads.
+          </p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">OMS</span><span class="chip">SQL</span><span class="chip">Functional QA</span>
+          </div>
+        </li>
+
+        <!-- AT&T -->
+        <li class="pl-8 sm:pl-12 relative">
+          <span class="absolute -left-[6px] top-2 w-3 h-3 rounded-full bg-zinc-500 shadow-[0_0_0_4px_#0a0a0a]"></span>
+          <div class="kicker mb-2">Jun 2014 &middot; Feb 2020</div>
+          <h3 class="display text-3xl sm:text-4xl">Advanced Quality Automation Engineer</h3>
+          <div class="mt-1 text-zinc-300">Amdocs &mdash; AT&amp;T.com</div>
+          <p class="mt-3 text-zinc-400 max-w-3xl text-sm leading-relaxed">
+            Started in the AQE division validating end-to-end e-commerce flows for AT&amp;T&rsquo;s online store
+            and embedded regression automation into CI pipelines to remove delivery bottlenecks.
+          </p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip">E2E QE</span><span class="chip">Regression</span><span class="chip">CI Pipelines</span>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============== CLIENTS ============== -->
+  <section id="clients" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 mb-12">
+        <div class="md:col-span-3 reveal">
+          <div class="kicker">Clients</div>
+        </div>
+        <div class="md:col-span-9 reveal">
+          <h2 class="display text-4xl sm:text-5xl md:text-6xl">
+            Built for telecom giants
+            <span class="display-italic text-mute">on three continents.</span>
+          </h2>
+          <p class="mt-4 text-zinc-400 max-w-2xl">A small slice of the operators whose subscribers I&rsquo;ve helped serve at Amdocs.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 reveal">
+        <div class="client-cell aspect-[4/3] border border-line flex flex-col items-center justify-center group">
+          <span class="client-name display text-5xl md:text-6xl">3UK</span>
+          <span class="kicker mt-3 opacity-0 group-hover:opacity-100 transition-opacity">UK &middot; ALDM</span>
+        </div>
+        <div class="client-cell aspect-[4/3] border border-line border-l-0 md:border-l flex flex-col items-center justify-center group">
+          <span class="client-name display text-5xl md:text-6xl">3ROI</span>
+          <span class="kicker mt-3 opacity-0 group-hover:opacity-100 transition-opacity">IE &middot; ADH</span>
+        </div>
+        <div class="client-cell aspect-[4/3] border border-line border-t-0 md:border-t md:border-l-0 flex flex-col items-center justify-center group">
+          <span class="client-name display text-4xl md:text-5xl">Singtel</span>
+          <span class="kicker mt-3 opacity-0 group-hover:opacity-100 transition-opacity">SG &middot; CRM</span>
+        </div>
+        <div class="client-cell aspect-[4/3] border border-line border-t-0 border-l-0 md:border-t md:border-l flex flex-col items-center justify-center group">
+          <span class="client-name display text-4xl md:text-5xl">Maxis</span>
+          <span class="kicker mt-3 opacity-0 group-hover:opacity-100 transition-opacity">MY &middot; OMS</span>
+        </div>
+        <div class="client-cell aspect-[4/3] border border-line border-t-0 md:border-t md:border-l-0 col-span-2 md:col-span-1 flex flex-col items-center justify-center group">
+          <span class="client-name display text-5xl md:text-6xl">AT&amp;T</span>
+          <span class="kicker mt-3 opacity-0 group-hover:opacity-100 transition-opacity">US &middot; e-com</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== CERTIFICATIONS ============== -->
+  <section id="certs" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 mb-12">
+        <div class="md:col-span-3 reveal">
+          <div class="kicker">Certifications</div>
+        </div>
+        <div class="md:col-span-9 reveal">
+          <h2 class="display text-4xl sm:text-5xl md:text-6xl">Always
+            <span class="display-italic grad-italic">levelling up.</span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- placeholders the user can replace -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 reveal">
+        <article class="tilt rounded-2xl border border-line bg-panel p-6 flex flex-col">
+          <div class="tilt-inner flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 grid place-items-center relative overflow-hidden">
+              <span class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,.4),transparent_55%)]"></span>
+              <span class="font-mono text-xs font-bold relative">DBX</span>
+            </div>
+            <div>
+              <div class="kicker">Databricks</div>
+              <h3 class="font-semibold">Certified Data Engineer Professional</h3>
+            </div>
+          </div>
+          <p class="tilt-inner mt-4 text-sm text-zinc-400 flex-1">Production-grade data engineering on Databricks &mdash; Lakehouse architecture, Spark optimization, governance.</p>
+          <div class="tilt-inner mt-4 flex items-center justify-between text-xs text-zinc-500 font-mono">
+            <span>Add date when issued</span>
+            <span class="text-accent">replace me &rarr;</span>
+          </div>
+        </article>
+
+        <article class="tilt rounded-2xl border border-line bg-panel p-6 flex flex-col">
+          <div class="tilt-inner flex items-center gap-3">
+            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-800 grid place-items-center relative overflow-hidden">
+              <span class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,.4),transparent_55%)]"></span>
+              <span class="font-mono text-xs font-bold relative">AZ</span>
+            </div>
+            <div>
+              <div class="kicker">Microsoft Azure</div>
+              <h3 class="font-semibold">Azure Data Engineer Associate</h3>
+            </div>
+          </div>
+          <p class="tilt-inner mt-4 text-sm text-zinc-400 flex-1">Azure-native data integration, transformation and serving with ADF, Synapse and Databricks.</p>
+          <div class="tilt-inner mt-4 flex items-center justify-between text-xs text-zinc-500 font-mono">
+            <span>Add date when issued</span>
+            <span class="text-accent">replace me &rarr;</span>
+          </div>
+        </article>
+
+        <article class="rounded-2xl border border-dashed border-line bg-transparent p-6 flex flex-col items-center justify-center text-center min-h-[200px] hover:border-accent/40 transition-colors">
+          <div class="w-10 h-10 rounded-full border border-zinc-700 grid place-items-center text-zinc-500 mb-3">+</div>
+          <p class="text-sm text-zinc-500">Drop your next certification here.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== TESTIMONIALS ============== -->
+  <section id="testimonials" class="relative z-10 border-t border-line">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 py-24 sm:py-32">
+      <div class="grid md:grid-cols-12 gap-10 mb-12">
+        <div class="md:col-span-3 reveal">
+          <div class="kicker">What they said</div>
+        </div>
+        <div class="md:col-span-9 reveal">
+          <h2 class="display text-4xl sm:text-5xl md:text-6xl">
+            Words from
+            <span class="display-italic grad-italic">the people I shipped with.</span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- placeholders the user can replace -->
+      <div class="grid md:grid-cols-3 gap-6 reveal">
+        <figure class="tilt rounded-2xl border border-line bg-panel p-7 flex flex-col">
+          <div class="tilt-inner flex items-center gap-4">
+            <div class="avatar" style="background: linear-gradient(135deg, #38bdf8, #6366f1);">AB</div>
+            <div>
+              <div class="text-zinc-200 font-medium">Akhil Bhardwaj</div>
+              <div class="kicker">Customer Program Delivery Manager, Amdocs</div>
+            </div>
+          </div>
+          <div class="tilt-inner display text-5xl text-accent leading-none mt-6">&ldquo;</div>
+          <blockquote class="tilt-inner mt-1 text-zinc-200 text-lg leading-relaxed">
+            Tarun&rsquo;s grasp of large-scale data architectures is rare and refreshing &mdash; he turns complexity into something a steering committee can act on.
+          </blockquote>
+        </figure>
+
+        <figure class="tilt rounded-2xl border border-line bg-panel p-7 flex flex-col">
+          <div class="tilt-inner flex items-center gap-4">
+            <div class="avatar" style="background: linear-gradient(135deg, #fbbf24, #f97316);">DM</div>
+            <div>
+              <div class="text-zinc-200 font-medium">Deepti Mahajan</div>
+              <div class="kicker">Engineering Line Manager, Amdocs</div>
+            </div>
+          </div>
+          <div class="tilt-inner display text-5xl text-accent leading-none mt-6">&ldquo;</div>
+          <blockquote class="tilt-inner mt-1 text-zinc-200 text-lg leading-relaxed">
+            He turned a fragile, multi-vendor legacy pipeline into a textbook cloud-native platform &mdash; and made it look easy.
+          </blockquote>
+        </figure>
+
+        <figure class="tilt rounded-2xl border border-line bg-panel p-7 flex flex-col">
+          <div class="tilt-inner flex items-center gap-4">
+            <div class="avatar" style="background: linear-gradient(135deg, #a78bfa, #ec4899);">HK</div>
+            <div>
+              <div class="text-zinc-200 font-medium">Hemant Kumar</div>
+              <div class="kicker">Senior Software Architect, Amdocs</div>
+            </div>
+          </div>
+          <div class="tilt-inner display text-5xl text-accent leading-none mt-6">&ldquo;</div>
+          <blockquote class="tilt-inner mt-1 text-zinc-200 text-lg leading-relaxed">
+            If you want execution and clarity in the same package, you want Tarun on the team.
+          </blockquote>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== MOTTO ============== -->
+  <section id="motto" class="relative z-10 border-t border-line overflow-hidden">
+    <!-- soft glow -->
+    <div aria-hidden="true" class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[60rem] h-[60rem] rounded-full"
+         style="background: radial-gradient(closest-side, rgba(251,191,36,.08), transparent 70%);"></div>
+    <div class="relative max-w-7xl mx-auto px-6 sm:px-10 py-32 sm:py-40 text-center">
+      <div class="kicker mb-8 reveal">My motto</div>
+      <h2 id="motto-line" class="display text-5xl sm:text-7xl md:text-8xl leading-[0.95]">
+        <span class="block">
+          <span class="motto-word" style="--i:0">Make</span>
+          <span class="motto-word" style="--i:1">it</span>
+          <span class="motto-word" style="--i:2">work.</span>
+        </span>
+        <span class="block text-mute">
+          <span class="motto-word" style="--i:3">Make</span>
+          <span class="motto-word" style="--i:4">it</span>
+          <span class="motto-word" style="--i:5">right.</span>
+        </span>
+        <span class="block">
+          <span class="motto-word display-italic" style="--i:6; color:#fbbf24;">Make</span>
+          <span class="motto-word display-italic" style="--i:7; color:#fbbf24;">it</span>
+          <span class="motto-word display-italic" style="--i:8; color:#fbbf24;">fast.</span>
+        </span>
+      </h2>
+      <p class="mt-10 kicker reveal">&mdash; Kent Beck</p>
+    </div>
+  </section>
+
+  <!-- ============== CONNECT / FOOTER ============== -->
+  <footer id="contact" class="relative z-10 border-t border-line overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 sm:px-10 pt-24 pb-10 relative">
+      <div class="grid md:grid-cols-12 gap-10 relative">
+        <div class="md:col-span-5 reveal">
+          <div class="kicker mb-4 flex items-center gap-2"><span class="pulse-dot"></span> Connect</div>
+          <h3 class="display text-4xl sm:text-5xl">
+            Have a hard data problem?
+            <span class="display-italic grad-italic">Let&rsquo;s talk.</span>
+          </h3>
+        </div>
+        <div class="md:col-span-7 reveal">
+          <ul class="grid sm:grid-cols-2 gap-4">
+            <li>
+              <a href="mailto:tarun.agrawal@hotmail.com"
+                 class="group block rounded-2xl border border-line bg-panel p-5 hover:border-accent transition-colors">
+                <div class="kicker">Email</div>
+                <div class="mt-1 text-zinc-100 group-hover:text-accent">tarun.agrawal@hotmail.com</div>
+              </a>
+            </li>
+            <li>
+              <a href="https://linkedin.com/in/tarun-agrawal-b43ab644" target="_blank" rel="noreferrer"
+                 class="group block rounded-2xl border border-line bg-panel p-5 hover:border-accent transition-colors">
+                <div class="kicker">LinkedIn</div>
+                <div class="mt-1 text-zinc-100 group-hover:text-accent">/in/tarun-agrawal-b43ab644</div>
+              </a>
+            </li>
+            <li>
+              <a href="tel:+919763624680"
+                 class="group block rounded-2xl border border-line bg-panel p-5 hover:border-accent transition-colors">
+                <div class="kicker">Phone</div>
+                <div class="mt-1 text-zinc-100 group-hover:text-accent">+91 97636 24680</div>
+              </a>
+            </li>
+            <li class="rounded-2xl border border-line bg-panel p-5">
+              <div class="kicker">Based in</div>
+              <div class="mt-1 text-zinc-100">Pune, India &middot; UTC+5:30</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Giant fading wordmark -->
+      <div aria-hidden="true" class="select-none mt-16 -mb-6 sm:-mb-8 leading-none">
+        <div class="wordmark text-[22vw] sm:text-[20vw] md:text-[18vw]">Tarun&nbsp;Agrawal</div>
+      </div>
+
+      <div class="mt-6 pt-6 border-t border-line flex flex-wrap items-center justify-between text-xs text-zinc-500 font-mono">
+        <span>&copy; 2026 Tarun Agrawal &middot; All rights reserved</span>
+        <span class="opacity-70">Built with care &middot; structure inspired by sahiranjum.com</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============== ENHANCED VANILLA JS ============== -->
+  <script>
+    (function () {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // ---- Reveal-on-scroll ----
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
+
+      // ---- Motto word-by-word reveal ----
+      const mottoIo = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            document.querySelectorAll('#motto .motto-word').forEach(w => w.classList.add('in'));
+            mottoIo.disconnect();
+          }
+        });
+      }, { threshold: 0.4 });
+      const mottoEl = document.getElementById('motto-line');
+      if (mottoEl) mottoIo.observe(mottoEl);
+
+      // ---- Scroll progress bar ----
+      const progress = document.getElementById('progress');
+      let ticking = false;
+      function updateProgress () {
+        const h = document.documentElement;
+        const scrolled = h.scrollTop || document.body.scrollTop;
+        const max = (h.scrollHeight - h.clientHeight) || 1;
+        progress.style.width = Math.min(100, (scrolled / max) * 100) + '%';
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { window.requestAnimationFrame(updateProgress); ticking = true; }
+      }, { passive: true });
+      updateProgress();
+
+      // ---- Cursor spotlight ----
+      const spot = document.getElementById('spotlight');
+      if (spot && !reduceMotion && matchMedia('(pointer: fine)').matches) {
+        let tx = window.innerWidth / 2, ty = window.innerHeight / 2;
+        let cx = tx, cy = ty;
+        window.addEventListener('mousemove', (e) => { tx = e.clientX; ty = e.clientY; });
+        function loop () {
+          cx += (tx - cx) * 0.12;
+          cy += (ty - cy) * 0.12;
+          spot.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`;
+          requestAnimationFrame(loop);
+        }
+        loop();
+      } else if (spot) {
+        spot.style.display = 'none';
+      }
+
+      // ---- Tilt cards ----
+      if (!reduceMotion) {
+        document.querySelectorAll('.tilt').forEach(card => {
+          card.addEventListener('mousemove', (e) => {
+            const r = card.getBoundingClientRect();
+            const x = (e.clientX - r.left) / r.width  - 0.5;
+            const y = (e.clientY - r.top)  / r.height - 0.5;
+            card.style.transform = `perspective(900px) rotateX(${(-y * 5).toFixed(2)}deg) rotateY(${(x * 5).toFixed(2)}deg) translateY(-2px)`;
+          });
+          card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+        });
+      }
+
+      // ---- Capability tile glow follow ----
+      document.querySelectorAll('.tile').forEach(t => {
+        t.addEventListener('mousemove', (e) => {
+          const r = t.getBoundingClientRect();
+          t.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100) + '%');
+          t.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100) + '%');
+        });
+      });
+
+      // ---- Hero name letter stagger ----
+      function splitChars (el) {
+        if (!el) return;
+        const text = el.textContent;
+        el.textContent = '';
+        text.split('').forEach((c, i) => {
+          if (c === ' ') { el.appendChild(document.createTextNode(' ')); return; }
+          const span = document.createElement('span');
+          span.className = 'name-char';
+          span.style.setProperty('--i', i);
+          span.textContent = c;
+          el.appendChild(span);
+        });
+      }
+      const n1 = document.getElementById('name-line-1');
+      const n2 = document.getElementById('name-line-2');
+      const baseLen = n1 ? n1.textContent.length : 0;
+      splitChars(n1);
+      // continue the index across lines so the italic Agrawal flows after Tarun
+      if (n2) {
+        const text = n2.textContent;
+        n2.textContent = '';
+        text.split('').forEach((c, i) => {
+          if (c === ' ') { n2.appendChild(document.createTextNode(' ')); return; }
+          const span = document.createElement('span');
+          span.className = 'name-char';
+          span.style.setProperty('--i', baseLen + i);
+          span.textContent = c;
+          n2.appendChild(span);
+        });
+      }
+
+      // ---- Rotating role text ----
+      const roles = ['Software Architect', 'Data Engineer', 'GenAI Builder', 'Cloud-Native Strategist', 'Team Lead'];
+      const roleEl = document.getElementById('role-rotator');
+      if (roleEl && !reduceMotion) {
+        let idx = 0;
+        roleEl.style.transition = 'opacity .35s ease, transform .35s ease';
+        roleEl.style.display = 'inline-block';
+        setInterval(() => {
+          roleEl.style.opacity = '0';
+          roleEl.style.transform = 'translateY(-6px)';
+          setTimeout(() => {
+            idx = (idx + 1) % roles.length;
+            roleEl.textContent = roles[idx];
+            roleEl.style.opacity = '1';
+            roleEl.style.transform = 'translateY(0)';
+          }, 360);
+        }, 3200);
+      }
+
+      // ---- Animated counters ----
+      const counterIo = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          const el = e.target;
+          const to = parseFloat(el.dataset.to);
+          const suffix = el.dataset.suffix || '';
+          const isInt = Number.isInteger(to);
+          const dur = 1400;
+          const start = performance.now();
+          function step (now) {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const v = to * eased;
+            el.textContent = (isInt ? Math.round(v) : v.toFixed(1)) + suffix;
+            if (t < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+          counterIo.unobserve(el);
+        });
+      }, { threshold: 0.4 });
+      document.querySelectorAll('.counter').forEach(el => counterIo.observe(el));
+
+      // ---- Section rail (active dot) ----
+      const rail = document.getElementById('rail');
+      if (rail) {
+        const targets = [...rail.querySelectorAll('a[data-target]')]
+          .map(a => ({ a, el: document.getElementById(a.dataset.target) }))
+          .filter(x => x.el);
+        const railIo = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            const t = targets.find(x => x.el === e.target);
+            if (!t) return;
+            if (e.isIntersecting) {
+              targets.forEach(x => x.a.classList.remove('active'));
+              t.a.classList.add('active');
+            }
+          });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+        targets.forEach(t => railIo.observe(t.el));
+      }
+    })();
+  </script>
+</body>
+</html>
