@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap location for crawlers (Google, Bing, etc.)
+Sitemap: https://tarunagrawal.in/sitemap.xml
